@@ -4,9 +4,15 @@ param addressSpace string
 param firewallSubnet string
 param privateLinkSubnet string
 param webAppSubnet string
+param usePreviewFeatures bool
+param nsgName string = ''
 
 // Azure Firewall Parameters
 param firewallIpName string
+
+resource nsg 'Microsoft.Network/networkSecurityGroups@2022-01-01' existing = if(usePreviewFeatures){
+  name: nsgName
+}
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: virtualNetworkName
@@ -28,8 +34,11 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
         name: 'subnet-privatelink'
         properties: {
           addressPrefix: privateLinkSubnet
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
+          privateEndpointNetworkPolicies: usePreviewFeatures ? 'Enabled' : 'Disabled'
+          privateLinkServiceNetworkPolicies: usePreviewFeatures ? 'Enabled' : 'Disabled'
+          networkSecurityGroup: usePreviewFeatures ? {
+            id: nsg.id
+          } : null
         }
         
       }

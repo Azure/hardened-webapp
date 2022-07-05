@@ -1,4 +1,5 @@
 param randomString string = take(uniqueString(resourceGroup().name), 5)
+param usePreviewFeatures bool = true
 
 // Virtual Network Parameters
 param virtualNetworkName string = 'vnet-${randomString}'
@@ -6,6 +7,9 @@ param addressSpace string = '10.235.235.0/24'
 param firewallSubnet string = '10.235.235.0/26'
 param privateLinkSubnet string = '10.235.235.64/27'
 param webAppSubnet string = '10.235.235.96/27'
+
+// Network Security Group
+param nsgName string = 'nsg${randomString}'
 
 // Azure Firewall Parameters
 param firewallIpName string = 'firewallip${randomString}'
@@ -35,7 +39,30 @@ param sqladministratorLoginPassword string
 // Route Table name
 param routeTableName string = 'routetable${randomString}'
 
+module nsgDeployment 'nsg.bicep' = if(usePreviewFeatures){
+  name: 'nsgDeployment'
+  params: {
+    nsgName: nsgName
+    securityRules: [
+      {
+        ruleName: 'Allow-Firewall'
+        description: 'Allow Firewall subnet'
+        access: 'Allow'
+        protocol: '*'
+        direction: 'Inbound'
+        priority: 100
+        sourceAddressPrefix: '10.235.235.0/26'
+        sourcePortRange: '*'
+        destinationAddressPrefix: '10.235.235.64/27'
+        destinationPortRange: '*'
+      }
+    ]
+  }
+}
 module networkDeployment 'network.bicep' = {
+  dependsOn: [
+    nsgDeployment
+  ]
   name: 'networkDeployment'
   params: {
     addressSpace: addressSpace
@@ -44,6 +71,8 @@ module networkDeployment 'network.bicep' = {
     privateLinkSubnet: privateLinkSubnet
     virtualNetworkName: virtualNetworkName
     webAppSubnet: webAppSubnet
+    usePreviewFeatures: usePreviewFeatures
+    nsgName: usePreviewFeatures ? nsgName : ''
   }
 }
 
