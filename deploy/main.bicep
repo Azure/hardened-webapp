@@ -16,8 +16,8 @@ param webAppName string = 'webapp${randomString}'
 
 // App Service Plan Parameters
 param appServicePlanName string = 'appsp${randomString}'
-param appServicePlanSku string = 'P1v2'
-param appServicePlanSkuCode string = 'Pv2'
+param appServicePlanSku string = 'S1'
+param appServicePlanSkuCode string = 'S'
 param workerSize int = 0
 param workerSizeId int = 0
 
