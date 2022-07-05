@@ -14,12 +14,16 @@ The ```main.bicep``` deploys the base infrastructure using Bicep modules from th
 - ```frontdoor.bicep```
 - ```routetable.bicep```
 
-1. [Install Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install) and deploy main.bicep using either [Azure PowerShell](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install#azure-powershell) or [Azure CLI](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install#azure-cli). The bicep file has pre-configured parameters for deploying all resources.
+1. [Install Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install)
 
-For example, using Azure PowerShell:
+
+2. Deploy ```main.bicep``` using either [Azure PowerShell](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install#azure-powershell) or [Azure CLI](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install#azure-cli). The bicep file has pre-configured parameters for deploying all resources.
+The parameter ```usePreviewFeatures```, set to ```true``` by default, enables deployment of a Network Security Group associated with the subnet that will host the Web App Private Endpoint. This restricts allowed incoming traffic to the Azure Firewall subnet alone by leveraging the [Private Endpoint support for NSGs (preview)](https://azure.microsoft.com/en-us/updates/public-preview-of-private-link-network-security-group-support/) feature. Set the parameter to ```false``` if you do not wish to leverage the preview feature in your deployment.
+
+If using PowerShell, deploy the resources with:
 
 ```powershell
-New-AzResourceGroupDeployment -ResourceGroupName [resourceGroupName] -Name [frontDoorDeployment] -TemplateFile .\frontdoor.bicep
+New-AzResourceGroupDeployment -ResourceGroupName [resourceGroupName] -Name [deploymentName] -TemplateFile .\main.bicep
 ```
 
 You will be asked to provide the parameters ```customBackendFqdn``` and ```sqladministratorLoginPassword``` upon deployment.
