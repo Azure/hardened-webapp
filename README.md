@@ -13,6 +13,8 @@ The ```main.bicep``` deploys the base infrastructure using Bicep modules from th
 - ```sql.bicep```
 - ```frontdoor.bicep```
 - ```routetable.bicep```
+- ```nsg.bicep```
+- ```nsgrules.bicep```
 
 1. [Install Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/install)
 
